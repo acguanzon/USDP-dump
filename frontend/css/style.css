@@ -226,4 +226,33 @@ footer {
   border: none;
 }
 .nav-tabs .nav-link { color: var(--color-primary); }
+.qr-scanner {
+  background: #000;
+  border-radius: 10px;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.scanner-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 49%, rgba(0,255,0,0.08) 50%, transparent 51%),
+    linear-gradient(transparent 49%, rgba(0,255,0,0.08) 50%, transparent 51%);
+  pointer-events: none;
+}
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #00ff00;
+  animation: scan 2s linear infinite;
+}
+@keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
 

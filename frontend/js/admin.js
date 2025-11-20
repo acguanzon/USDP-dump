@@ -110,6 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const discountsTable = document.getElementById('discountsTable');
   const usersLoadMore = document.getElementById('usersLoadMore');
   const discountsLoadMore = document.getElementById('discountsLoadMore');
+  const btnScanSuccess = document.getElementById('btnScanSuccess');
+  const btnScanFail = document.getElementById('btnScanFail');
+  const btnPostAnnouncement = document.getElementById('btnPostAnnouncement');
   if (usersTable) {
     usersTable.addEventListener('change', async (e) => {
       const sel = e.target.closest('[data-role]');
@@ -245,7 +248,51 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   }
+
+  if (btnScanSuccess) {
+    btnScanSuccess.addEventListener('click', () => simulateScan('success'));
+  }
+  if (btnScanFail) {
+    btnScanFail.addEventListener('click', () => simulateScan('fail'));
+  }
+  if (btnPostAnnouncement) {
+    btnPostAnnouncement.addEventListener('click', () => postAnnouncement());
+  }
 });
+
+function simulateScan(type) {
+  const resultsDiv = document.getElementById('scanResults');
+  if (!resultsDiv) return;
+  if (type === 'success') {
+    resultsDiv.innerHTML = `
+      <div class="alert alert-success">
+        <h6><i class="bi bi-check-circle me-2"></i>Scan Successful</h6>
+        <p class="mb-1"><strong>Student:</strong> Maria Santos</p>
+        <p class="mb-1"><strong>ID:</strong> 2024-001</p>
+        <p class="mb-1"><strong>Card Type:</strong> Gold</p>
+        <p class="mb-0"><strong>Event:</strong> Rice Distribution</p>
+        <hr>
+        <small class="text-success">Recorded at ${new Date().toLocaleTimeString()}</small>
+      </div>
+    `;
+  } else {
+    resultsDiv.innerHTML = `
+      <div class="alert alert-danger">
+        <h6><i class="bi bi-x-circle me-2"></i>Invalid QR Code</h6>
+        <p class="mb-0">The scanned QR code is not recognized or not valid for this event.</p>
+      </div>
+    `;
+  }
+}
+
+function postAnnouncement() {
+  const modalEl = document.getElementById('postAnnouncementModal');
+  const title = document.getElementById('annTitle')?.value?.trim();
+  if (!title) return;
+  const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+  alert('Announcement posted successfully');
+  modal.hide();
+}
 
 function initTokens() {
   const genForm = document.getElementById('genTokenForm');
