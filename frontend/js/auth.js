@@ -64,7 +64,6 @@ if (loginForm) {
       if (res.ok && data.token) {
         localStorage.setItem('token', data.token);
         const decodedRole = parseToken(data.token)?.role;
-        // Route per token not just selected role
         window.location.href = decodedRole === 'admin' ? 'admin-dashboard.html' : 'dashboard.html';
       } else {
         const msg = data.message || `Login failed (${res.status})`;
@@ -107,7 +106,7 @@ if (registerForm) {
 document.addEventListener('DOMContentLoaded', () => {
   const token = getToken();
   const payload = token ? parseToken(token) : null;
-  const isAdminPage = location.pathname.endsWith('admin-dashboard.html');
+  const isAdminPage = /admin-.*\.html$/.test(location.pathname);
   const isUserPage = location.pathname.endsWith('dashboard.html');
   if ((isAdminPage || isUserPage) && !payload) {
     window.location.href = 'login.html';

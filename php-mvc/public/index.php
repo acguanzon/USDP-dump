@@ -1,0 +1,40 @@
+<?php
+require __DIR__ . '/../app/bootstrap.php';
+use Core\Router;
+use Core\Request;
+use Core\Response;
+use App\Controllers\AuthController;
+use App\Controllers\AdminController;
+use App\Controllers\UserController;
+use App\Controllers\HealthController;
+use App\Controllers\FilesController;
+
+$router = new Router();
+$router->add('GET', '/api/health', [HealthController::class, 'status']);
+$router->add('POST', '/api/auth/register', [AuthController::class, 'register']);
+$router->add('POST', '/api/auth/login', [AuthController::class, 'login']);
+$router->add('GET', '/api/admin/users', [AdminController::class, 'listUsers']);
+$router->add('POST', '/api/admin/users', [AdminController::class, 'createUser']);
+$router->add('PUT', '/api/admin/users/:id', [AdminController::class, 'updateUser']);
+$router->add('DELETE', '/api/admin/users/:id', [AdminController::class, 'deleteUser']);
+$router->add('POST', '/api/admin/users/:id/qr', [AdminController::class, 'generateUserQr']);
+$router->add('GET', '/api/admin/discounts', [AdminController::class, 'listDiscounts']);
+$router->add('POST', '/api/admin/discounts', [AdminController::class, 'createDiscount']);
+$router->add('PUT', '/api/admin/discounts/:id', [AdminController::class, 'updateDiscount']);
+$router->add('DELETE', '/api/admin/discounts/:id', [AdminController::class, 'deleteDiscount']);
+$router->add('POST', '/api/admin/discounts/:id/tokens', [AdminController::class, 'generateTokensForDiscount']);
+$router->add('GET', '/api/admin/discounts/:id/tokens', [AdminController::class, 'listTokensForDiscount']);
+$router->add('GET', '/api/user/discounts', [UserController::class, 'listActiveDiscounts']);
+$router->add('POST', '/api/user/discounts/:id/apply', [UserController::class, 'applyToDiscount']);
+$router->add('GET', '/api/user/applications', [UserController::class, 'myApplications']);
+$router->add('GET', '/api/user/profile', [UserController::class, 'getProfile']);
+$router->add('PUT', '/api/user/profile', [UserController::class, 'updateProfile']);
+$router->add('POST', '/api/user/tokens/redeem', [UserController::class, 'redeemToken']);
+$router->add('POST', '/api/files/presign', [FilesController::class, 'presign']);
+$router->add('GET', '/api/files', [FilesController::class, 'list']);
+$router->add('DELETE', '/api/files/:id', [FilesController::class, 'delete']);
+
+$request = Request::fromGlobals();
+$response = new Response();
+$router->dispatch($request, $response);
+echo $response->send();

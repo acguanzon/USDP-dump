@@ -1,0 +1,17 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# PHP
+vendor/
+php-mvc/storage/
+*.sqlite
+*.log
+.env
+
+# Build/coverage
+dist/
+coverage/

@@ -3,215 +3,221 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard • UNOR-SSG Discounts</title>
+    <title>Admin Dashboard • UNOR-SSG</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="css/style.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-white sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary">
       <div class="container">
-        <a class="navbar-brand" href="index.html"><span class="brand-gradient">UNOR-SSG</span> Admin</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample"><span class="navbar-toggler-icon"></span></button>
-        <div id="navbarsExample" class="collapse navbar-collapse">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" id="navRole" href="#"></a></li>
-            <li class="nav-item ms-lg-2"><button type="button" class="btn btn-outline-secondary" id="logoutBtn" data-logout>Logout</button></li>
-          </ul>
+        <a class="navbar-brand" href="index.html"><img src="assets/logo.png" alt="USDP" height="28" class="me-2 align-middle" />USDP Admin Portal</a>
+        <div class="ms-auto d-flex align-items-center gap-3">
+          <span class="text-white small" id="welcomeAdmin">Welcome, Administrator</span>
+          <button class="btn btn-outline-light btn-sm" id="logoutBtn" data-logout><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
         </div>
       </div>
     </nav>
 
-    <main class="container py-4">
-      <div class="card p-4 mb-4">
-        <div class="d-flex align-items-center justify-content-between">
-          <h5 class="mb-0 text-gradient">Quick Actions</h5>
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary btn-sm" data-bs-toggle="tab" data-bs-target="#usersTab">Manage Users</button>
-            <button class="btn btn-primary btn-sm" data-bs-toggle="tab" data-bs-target="#discountsTab">Manage Discounts</button>
-          </div>
-        </div>
-      </div>
-      <ul class="nav nav-underline mb-4" id="adminTabs" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#usersTab" type="button">Users</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#discountsTab" type="button">Discounts</button></li>
-      </ul>
-
-      <div class="tab-content">
-        <div class="tab-pane fade show active" id="usersTab">
-          <div class="row g-3">
-            <div class="col-lg-4">
-              <div class="card p-4">
-                <h5 class="mb-3">Add User</h5>
-                <form id="addUserForm">
-                  <input class="form-control mb-2" id="uName" placeholder="Full name" required />
-                  <input type="email" class="form-control mb-2" id="uEmail" placeholder="Email" required />
-                  <input type="password" class="form-control mb-2" id="uPassword" placeholder="Password" required />
-                  <select class="form-select mb-3" id="uRole">
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <button class="btn btn-primary w-100">Create</button>
-                </form>
+    <main class="container mt-4">
+      <div class="row g-4">
+        <aside class="col-md-3">
+          <div class="card shadow-sm">
+            <div class="card-body text-center">
+              <div class="user-card mb-3" style="border-radius:10px; padding:1rem;">
+                <i class="bi bi-shield-check" style="font-size:2rem"></i>
               </div>
-            </div>
-            <div class="col-lg-8">
-              <div class="card p-3">
-                <div class="table-responsive virtual-table">
-                  <table class="table mb-0 align-middle">
-                    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th class="text-end">Actions</th></tr></thead>
-                    <tbody id="usersTable">
-                      <tr id="usersLoading"><td colspan="4" class="text-center text-secondary">Loading...</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="d-flex justify-content-end mt-2">
-                  <button class="btn btn-outline-secondary btn-sm" id="usersLoadMore">Load More</button>
-                </div>
+              <h5 class="card-title mb-0">Administrator</h5>
+              <div class="text-muted">System Admin</div>
+              <span class="badge bg-primary mt-2">ADMIN</span>
+              <div class="mt-4 list-group list-group-flush">
+                <a href="admin-dashboard.html" class="list-group-item list-group-item-action active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+                <a href="admin-users.html" class="list-group-item list-group-item-action"><i class="bi bi-people me-2"></i>User Management</a>
+                <a href="admin-discounts.html" class="list-group-item list-group-item-action"><i class="bi bi-ticket-perforated me-2"></i>Discounts</a>
+                <a href="admin-announcements.html" class="list-group-item list-group-item-action"><i class="bi bi-megaphone me-2"></i>Announcements</a>
+                <a href="admin-scanner.html" class="list-group-item list-group-item-action"><i class="bi bi-qr-code me-2"></i>QR Scanner</a>
               </div>
             </div>
           </div>
-        </div>
+        </aside>
 
-        <div class="tab-pane fade" id="discountsTab">
-          <div class="row g-3">
-            <div class="col-lg-4">
-              <div class="card p-4">
-                <h5 class="mb-3">Create Discount</h5>
-                <form id="addDiscountForm">
-                  <input class="form-control mb-2" id="dTitle" placeholder="Title" required />
-                  <textarea class="form-control mb-2" id="dDesc" placeholder="Description" rows="3"></textarea>
-                  <textarea class="form-control mb-2" id="dElig" placeholder="Eligibility" rows="2"></textarea>
-                  <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="dActive" checked />
-                    <label class="form-check-label" for="dActive">Active</label>
+        <section class="col-md-9">
+          <h2 class="text-gradient mb-3">Admin Dashboard</h2>
+
+          <div class="row g-3" id="adminStatsRow">
+            <div class="col-xl-3 col-md-6">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <div class="text-muted small">Total Students</div>
+                      <div class="h4 mb-0" id="statStudents">—</div>
+                      <div class="small text-success" id="statStudentsDelta"></div>
+                    </div>
+                    <i class="bi bi-people" style="font-size:1.5rem"></i>
                   </div>
-                  <button class="btn btn-primary w-100">Create</button>
-                </form>
+                </div>
               </div>
-              <div class="card p-4 mt-3">
-                <h5 class="mb-3">Generate Tokens</h5>
-                <form id="genTokenForm">
-                  <input class="form-control mb-2" id="tDiscountId" placeholder="Discount ID" required />
-                  <div class="row g-2">
-                    <div class="col-6"><input type="number" min="1" max="1000" value="1" class="form-control" id="tCount" placeholder="Count" /></div>
-                    <div class="col-6"><input class="form-control" id="tPrefix" placeholder="Prefix (optional)" /></div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <div class="text-muted small">Active Discounts</div>
+                      <div class="h4 mb-0" id="statActiveDiscounts">—</div>
+                      <div class="small text-primary" id="statActiveUpcoming"></div>
+                    </div>
+                    <i class="bi bi-ticket-perforated" style="font-size:1.5rem"></i>
                   </div>
-                  <input class="form-control mt-2" id="tExpires" type="datetime-local" placeholder="Expires At (optional)" />
-                  <button class="btn btn-primary w-100 mt-2">Generate</button>
-                </form>
-                <div id="genTokenResult" class="small text-secondary mt-2" style="white-space: pre-wrap;"></div>
+                </div>
               </div>
             </div>
-            <div class="col-lg-8">
-              <div class="card p-3">
-                <div class="table-responsive virtual-table">
-                  <table class="table mb-0 align-middle">
-                    <thead><tr><th>Title</th><th>ID</th><th>Status</th><th>Applicants</th><th class="text-end">Actions</th></tr></thead>
-                    <tbody id="discountsTable">
-                      <tr id="discountsLoading"><td colspan="5" class="text-center text-secondary">Loading...</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="d-flex justify-content-end mt-2">
-                  <button class="btn btn-outline-secondary btn-sm" id="discountsLoadMore">Load More</button>
+            <div class="col-xl-3 col-md-6">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <div class="text-muted small">Benefits Distributed</div>
+                      <div class="h4 mb-0" id="statBenefits">—</div>
+                      <div class="small text-muted">This semester</div>
+                    </div>
+                    <i class="bi bi-gift" style="font-size:1.5rem"></i>
+                  </div>
                 </div>
               </div>
-              <div class="card p-3 mt-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                  <h6 class="mb-0">Tokens for Discount</h6>
-                  <input class="form-control" style="max-width:260px" id="tListDiscountId" placeholder="Discount ID" />
-                </div>
-                <button class="btn btn-outline-secondary btn-sm mb-2" id="btnListTokens">Load Tokens</button>
-                <div class="table-responsive">
-                  <table class="table table-sm mb-0">
-                    <thead><tr><th>Code</th><th>Used</th><th>Used By</th><th>Expires</th></tr></thead>
-                    <tbody id="tokensTable"></tbody>
-                  </table>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <div class="text-muted small">System Status</div>
+                      <div class="h4 mb-0"><span class="text-success" id="statSystemStatus">Online</span></div>
+                      <div class="small text-muted">All systems operational</div>
+                    </div>
+                    <i class="bi bi-check-circle" style="font-size:1.5rem"></i>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="tab-pane fade" id="scannerTab">
-          <div class="row g-3">
-            <div class="col-lg-6">
-              <div class="card p-4">
-                <h5 class="mb-3">QR Scanner</h5>
-                <div class="qr-scanner mb-3">
-                  <div class="scanner-overlay"></div>
-                  <div class="scan-line"></div>
-                  <div class="text-white-50">Camera preview simulation</div>
+          <div class="card shadow-sm mt-3">
+            <div class="card-header bg-gradient-primary text-white"><i class="bi bi-lightning-charge me-2"></i>Quick Actions</div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <button class="btn btn-gradient w-100 py-4" id="btnCreateDiscount"><i class="bi bi-plus-circle me-2"></i>Create Discount</button>
                 </div>
-                <div class="d-flex gap-2">
-                  <button class="btn btn-success" id="btnScanSuccess">Simulate Success</button>
-                  <button class="btn btn-danger" id="btnScanFail">Simulate Fail</button>
+                <div class="col-md-6">
+                  <button class="btn btn-success w-100 py-4" id="btnAddStudent"><i class="bi bi-person-plus me-2"></i>Add Student</button>
+                </div>
+                <div class="col-md-6">
+                  <button class="btn btn-warning w-100 py-4" id="btnPostAnnouncement"><i class="bi bi-megaphone me-2"></i>Post Announcement</button>
+                </div>
+                <div class="col-md-6">
+                  <button class="btn btn-dark w-100 py-4" id="btnQRScanner"><i class="bi bi-qr-code me-2"></i>QR Scanner</button>
                 </div>
               </div>
             </div>
-            <div class="col-lg-6">
-              <div class="card p-4">
-                <h5 class="mb-3">Scan Results</h5>
-                <div id="scanResults" class="small text-secondary">No scans yet</div>
-              </div>
-            </div>
           </div>
-        </div>
-
-        <div class="tab-pane fade" id="announcementsTab">
-          <div class="card p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h5 class="mb-0">Announcements</h5>
-              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#postAnnouncementModal">Post Announcement</button>
-            </div>
-            <div class="text-secondary">Use the button to create a new announcement for students.</div>
-          </div>
-        </div>
+        </section>
       </div>
     </main>
 
-    <div class="modal fade" id="postAnnouncementModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="modalCreateDiscount" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header bg-gradient-primary text-white">
-            <h5 class="modal-title">Post New Announcement</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <div class="modal-header">
+            <h5 class="modal-title">Create Discount</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="formCreateDiscount">
+            <div class="modal-body">
+              <div class="mb-2"><input class="form-control" id="cdTitle" placeholder="Title" required /></div>
+              <div class="mb-2"><textarea class="form-control" id="cdDesc" rows="3" placeholder="Description"></textarea></div>
+              <div class="mb-2"><textarea class="form-control" id="cdElig" rows="2" placeholder="Eligibility"></textarea></div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="cdActive" checked />
+                <label class="form-check-label" for="cdActive">Active</label>
+              </div>
+              <div class="small text-secondary" id="cdMsg"></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-primary" type="submit">Create</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalAddStudent" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add Student</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="formAddStudent">
+            <div class="modal-body">
+              <div class="mb-2"><input class="form-control" id="asName" placeholder="Full name" required /></div>
+              <div class="mb-2"><input type="email" class="form-control" id="asEmail" placeholder="Email" required /></div>
+              <div class="mb-2"><input type="password" class="form-control" id="asPassword" placeholder="Password" required /></div>
+              <div class="small text-secondary" id="asMsg"></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-primary" type="submit">Add</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalPostAnnouncement" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Post Announcement</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="formPostAnnouncement">
+            <div class="modal-body">
+              <div class="mb-2"><input class="form-control" id="anTitle" placeholder="Title" required /></div>
+              <div class="mb-2"><textarea class="form-control" id="anBody" rows="4" placeholder="Announcement details" required></textarea></div>
+              <div class="small text-secondary" id="anMsg"></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-primary" type="submit">Post</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalQRScanner" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">QR Scanner</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="postAnnouncementForm">
-              <div class="mb-3">
-                <label class="form-label">Title</label>
-                <input type="text" class="form-control" id="annTitle" placeholder="Enter announcement title" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Content</label>
-                <textarea class="form-control" id="annContent" rows="4" placeholder="Enter announcement content" required></textarea>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Target Audience</label>
-                <select class="form-select" id="annAudience" required>
-                  <option value="all">All Students</option>
-                  <option value="gold">Gold Card Only</option>
-                  <option value="blue">Blue Card Only</option>
-                </select>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="annPublish">
-                <label class="form-check-label" for="annPublish">Publish immediately</label>
-              </div>
-            </form>
+            <div class="qr-scanner mb-2" id="qrPreview">
+              <div class="scanner-overlay"></div>
+              <div class="scan-line"></div>
+              <video id="qrVideo" playsinline muted style="width:100%;height:auto"></video>
+            </div>
+            <div class="input-group">
+              <input class="form-control" id="qrManual" placeholder="Paste code if camera unsupported" />
+              <button class="btn btn-primary" id="qrManualSubmit">Validate</button>
+            </div>
+            <div class="small text-secondary mt-2" id="qrMsg"></div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-info" id="btnPostAnnouncement">Post Announcement</button>
+            <button class="btn btn-outline-secondary" id="qrStart">Start</button>
+            <button class="btn btn-outline-secondary" id="qrStop">Stop</button>
           </div>
         </div>
       </div>
     </div>
 
     <script src="js/auth.js"></script>
-    <script src="js/admin.js"></script>
+    <script src="js/admin-dashboard.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
-  </html>
-
+</html>

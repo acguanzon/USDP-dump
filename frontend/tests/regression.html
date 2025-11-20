@@ -41,10 +41,9 @@
         assert('login has role selector', !!login.querySelector('.role-selector'));
         assert('login has form', !!login.getElementById('loginForm'));
 
-        // Admin dashboard key elements
-        assert('admin has tabs', !!admin.getElementById('adminTabs'));
-        assert('admin has users table', !!admin.getElementById('usersTable'));
-        assert('admin has discounts table', !!admin.getElementById('discountsTable'));
+        // Admin dashboard key elements (new UI)
+        assert('admin stats row', !!admin.getElementById('adminStatsRow'));
+        assert('admin quick actions exist', !!admin.getElementById('btnCreateDiscount'));
 
         // User dashboard key elements
         assert('user has discounts list', !!user.getElementById('discountsList'));

@@ -5,8 +5,7 @@
     if (!token) return;
     const payload = JSON.parse(atob(token.split('.')[1]));
     if (location.pathname.endsWith('index.html') || /\/?frontend\/?$/.test(location.pathname)) {
-      if (payload.role === 'admin') location.href = 'admin-dashboard.html';
-      else location.href = 'dashboard.html';
+      location.href = payload && payload.role === 'admin' ? 'admin-dashboard.html' : 'dashboard.html';
     }
   } catch {}
 })();

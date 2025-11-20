@@ -10,7 +10,7 @@
   <body>
     <nav class="navbar navbar-expand-lg bg-white sticky-top">
       <div class="container">
-        <a class="navbar-brand" href="index.html"><span class="brand-gradient">UNOR-SSG</span> Discounts</a>
+        <a class="navbar-brand" href="index.html"><img src="assets/logo.png" alt="UNOR-SSG" height="28" class="me-2 align-middle" /><span class="brand-gradient">UNOR-SSG</span> Discounts</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample"><span class="navbar-toggler-icon"></span></button>
         <div id="navbarsExample" class="collapse navbar-collapse">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -23,12 +23,105 @@
 
     <main class="container py-4">
       <div class="row g-4">
-        <div class="col-lg-8">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="h5 mb-0 text-gradient">Available Discounts</h3>
+        <aside class="col-lg-3">
+          <div class="card p-3">
+            <div class="card" id="userCard" style="border-radius:16px; overflow:hidden;">
+              <div id="userCardHeader" class="p-3 text-white" style="background:linear-gradient(135deg,#1E40AF,#6D28D9)">
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong>USDP STUDENT CARD</strong>
+                  <span class="badge bg-primary" id="userCardType">BLUE</span>
+                </div>
+              </div>
+              <div class="p-3">
+                <div class="d-flex align-items-center">
+                  <div class="flex-grow-1">
+                    <div class="fw-bold" id="userCardName">—</div>
+                    <div class="text-secondary small">Student ID: <span id="userStudentId">—</span></div>
+                  </div>
+                  <canvas id="userCardQr" width="128" height="128" style="border-radius:8px; background:#fff"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 text-center">
+              <button class="btn btn-outline-primary w-100" id="downloadCard">Download Card</button>
+            </div>
+            <div class="divider my-3"></div>
+            <div class="list-group list-group-flush">
+              <a href="#" class="list-group-item list-group-item-action active" data-goto="studentDashboard">Dashboard</a>
+              <a href="#" class="list-group-item list-group-item-action" data-goto="studentBenefits">My Benefits</a>
+              <a href="#" class="list-group-item list-group-item-action" data-goto="studentEvents">Events</a>
+              <a href="#" class="list-group-item list-group-item-action" data-goto="studentProfile">My Profile</a>
+            </div>
           </div>
-          <div id="discountsLoading" class="text-center my-3">Loading discounts...</div>
-          <div id="discountsList" class="row g-3"></div>
+        </aside>
+        <section class="col-lg-9">
+          <h2 class="text-gradient mb-3">Student Dashboard</h2>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <div class="card p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    <div class="text-muted small">Benefits Claimed</div>
+                    <div class="h4 mb-0" id="statBenefitsClaimed">0</div>
+                    <div class="small text-muted">This semester</div>
+                  </div>
+                  <i class="bi bi-gift" style="font-size:1.4rem"></i>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    <div class="text-muted small">Upcoming Events</div>
+                    <div class="h4 mb-0" id="statUpcomingEvents">0</div>
+                    <div class="small text-muted">You're eligible</div>
+                  </div>
+                  <i class="bi bi-calendar2-event" style="font-size:1.4rem"></i>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    <div class="text-muted small">Card Status</div>
+                    <div class="h4 mb-0"><span id="statCardStatus">Active</span></div>
+                    <div class="small text-muted" id="statCardTier">Blue Card</div>
+                  </div>
+                  <i class="bi bi-check-circle" style="font-size:1.4rem"></i>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    <div class="text-muted small">Notifications</div>
+                    <div class="h4 mb-0" id="statNotifications">0</div>
+                    <div class="small text-muted">Unread messages</div>
+                  </div>
+                  <i class="bi bi-bell" style="font-size:1.4rem"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mt-3">
+            <div class="card-header bg-gradient-primary text-white">Latest Announcements</div>
+            <div class="card-body" id="announcementsList"></div>
+          </div>
+
+          <div class="card shadow-sm mt-3">
+            <div class="card-header bg-gradient-primary text-white">Upcoming Events</div>
+            <div class="card-body" id="eventsList"></div>
+          </div>
+
+          <div class="mt-5">
+            <h3 class="h5 mb-3 text-gradient">Available Discounts</h3>
+            <div id="discountsLoading" class="text-center my-3">Loading discounts...</div>
+            <div id="discountsList" class="row g-3"></div>
+          </div>
 
           <div class="mt-5">
             <h3 class="h5 mb-3 text-gradient">My Applications</h3>
@@ -36,58 +129,48 @@
               <div class="table-responsive">
                 <table class="table mb-0">
                   <thead>
-                    <tr>
-                      <th>Discount</th>
-                      <th>Status</th>
-                      <th>Applied</th>
-                    </tr>
+                    <tr><th>Discount</th><th>Status</th><th>Applied</th></tr>
                   </thead>
-                  <tbody id="applicationsTable">
-                    <tr id="appsLoading"><td colspan="3" class="text-center text-secondary">Loading...</td></tr>
-                  </tbody>
+                  <tbody id="applicationsTable"><tr id="appsLoading"><td colspan="3" class="text-center text-secondary">Loading...</td></tr></tbody>
                 </table>
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="card p-4">
-            <h5 class="mb-3">My Profile</h5>
-            <form id="profileForm">
-              <div class="mb-3">
-                <label class="form-label">Name</label>
-                <input class="form-control" id="profileName" required />
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input class="form-control" id="profileEmail" disabled />
-              </div>
-              <button class="btn btn-primary w-100">Save</button>
-            </form>
-          </div>
-          <div class="card p-4 mt-3">
-            <h5 class="mb-3">Redeem Token</h5>
-            <form id="redeemForm">
-              <input class="form-control mb-2" id="redeemCode" placeholder="Enter token code (e.g., UNOR-XXXXXX)" required />
-              <button class="btn btn-accent w-100" type="submit">Redeem</button>
-            </form>
-            <div id="redeemMsg" class="small mt-2"></div>
-          </div>
-          <div class="card p-4 mt-3">
-            <h5 class="mb-3">Student QR Code</h5>
-            <div class="bg-light rounded p-3 d-inline-block mb-3">
-              <div class="bg-white rounded d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
-                <span class="text-muted">QR CODE</span>
-              </div>
+
+          <div class="mt-5">
+            <h3 class="h5 mb-3 text-gradient">My Profile</h3>
+            <div class="card p-4">
+              <form id="profileForm">
+                <div class="mb-3">
+                  <label class="form-label">Name</label>
+                  <input class="form-control" id="profileName" required />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input class="form-control" id="profileEmail" disabled />
+                </div>
+                <button class="btn btn-primary">Save</button>
+              </form>
             </div>
-            <button class="btn btn-outline-primary w-100">Download QR Code</button>
           </div>
-        </div>
+
+          <div class="mt-5">
+            <h3 class="h5 mb-3 text-gradient">Redeem Token</h3>
+            <div class="card p-4">
+              <form id="redeemForm">
+                <input class="form-control mb-2" id="redeemCode" placeholder="Enter token code (e.g., UNOR-XXXXXX)" required />
+                <button class="btn btn-accent" type="submit">Redeem</button>
+              </form>
+              <div id="redeemMsg" class="small mt-2"></div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
 
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
   </html>
