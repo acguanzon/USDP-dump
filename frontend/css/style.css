@@ -60,7 +60,7 @@ body {
 
 .card-hover:hover {
   transform: translateY(-2px);
-  transition: transform 0.2s ease;
+  transition: transform 0.12s ease;
 }
 
 .badge-indigo {
@@ -202,4 +202,13 @@ footer {
   box-shadow: 0 2px 8px rgba(91,60,196,0.13);
 }
 .role-option:not(.active):hover { background: rgba(255,255,255,0.11); color: #fff; }
+.tab-content { will-change: contents; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
 
