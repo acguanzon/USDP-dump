@@ -30,6 +30,12 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #7a5df0 50%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .btn-primary {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
@@ -211,4 +217,13 @@ footer {
     transition-duration: 0.001ms !important;
   }
 }
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #6D28D9 0%, #1E40AF 100%) !important;
+}
+.nav-tabs .nav-link.active {
+  background: linear-gradient(135deg, var(--color-primary), #7a5df0);
+  color: #fff;
+  border: none;
+}
+.nav-tabs .nav-link { color: var(--color-primary); }
 

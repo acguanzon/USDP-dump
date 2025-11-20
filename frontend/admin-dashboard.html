@@ -22,6 +22,15 @@
     </nav>
 
     <main class="container py-4">
+      <div class="card p-4 mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <h5 class="mb-0 text-gradient">Quick Actions</h5>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary btn-sm" data-bs-toggle="tab" data-bs-target="#usersTab">Manage Users</button>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="tab" data-bs-target="#discountsTab">Manage Discounts</button>
+          </div>
+        </div>
+      </div>
       <ul class="nav nav-underline mb-4" id="adminTabs" role="tablist">
         <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#usersTab" type="button">Users</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#discountsTab" type="button">Discounts</button></li>
