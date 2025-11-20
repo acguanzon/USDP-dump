@@ -1,5 +1,8 @@
 let usersCache = [];
 let discountsCache = [];
+let usersPage = 1;
+let discountsPage = 1;
+const PAGE_LIMIT = 20;
 
 function renderUsers(users) {
   usersCache = Array.isArray(users) ? users : [];
@@ -87,8 +90,9 @@ async function loadAdmin() {
   const discountsLoading = document.getElementById('discountsLoading');
   if (usersLoading) usersLoading.style.visibility = 'visible';
   if (discountsLoading) discountsLoading.style.visibility = 'visible';
-  const usersPromise = authorizedFetch(`${API_BASE}/admin/users`).then(r => r.json()).catch(() => []);
-  const discountsPromise = authorizedFetch(`${API_BASE}/admin/discounts`).then(r => r.json()).catch(() => []);
+  usersPage = 1; discountsPage = 1; usersCache = []; discountsCache = [];
+  const usersPromise = authorizedFetch(`${API_BASE}/admin/users?limit=${PAGE_LIMIT}&page=${usersPage}`).then(r => r.json()).catch(() => []);
+  const discountsPromise = authorizedFetch(`${API_BASE}/admin/discounts?limit=${PAGE_LIMIT}&page=${discountsPage}`).then(r => r.json()).catch(() => []);
   const [users, discounts] = await Promise.all([usersPromise, discountsPromise]);
   requestAnimationFrame(() => {
     renderUsers(users);
@@ -104,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initTokens();
   const usersTable = document.getElementById('usersTable');
   const discountsTable = document.getElementById('discountsTable');
+  const usersLoadMore = document.getElementById('usersLoadMore');
+  const discountsLoadMore = document.getElementById('discountsLoadMore');
   if (usersTable) {
     usersTable.addEventListener('change', async (e) => {
       const sel = e.target.closest('[data-role]');
@@ -129,6 +135,41 @@ document.addEventListener('DOMContentLoaded', () => {
       if (row) row.remove();
       usersCache = usersCache.filter(u => u._id !== id);
     });
+    if (usersLoadMore) {
+      usersLoadMore.addEventListener('click', async () => {
+        usersLoadMore.disabled = true;
+        try {
+          const nextPage = usersPage + 1;
+          const res = await authorizedFetch(`${API_BASE}/admin/users?limit=${PAGE_LIMIT}&page=${nextPage}`);
+          const chunk = await res.json();
+          if (Array.isArray(chunk) && chunk.length) {
+            usersPage = nextPage;
+            usersCache = usersCache.concat(chunk);
+            const appendedHtml = chunk.map(u => `
+              <tr data-user-row="${u._id}">
+                <td>${u.name}</td>
+                <td>${u.email}</td>
+                <td>
+                  <select class="form-select form-select-sm" data-role="${u._id}">
+                    <option value="user" ${u.role==='user'?'selected':''}>User</option>
+                    <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                  </select>
+                </td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-danger" data-del="${u._id}">Delete</button>
+                </td>
+              </tr>
+            `).join('');
+            usersTable.insertAdjacentHTML('beforeend', appendedHtml);
+          } else {
+            usersLoadMore.textContent = 'No more';
+            usersLoadMore.disabled = true;
+          }
+        } finally {
+          usersLoadMore.disabled = false;
+        }
+      });
+    }
   }
   if (discountsTable) {
     discountsTable.addEventListener('click', async (e) => {
@@ -169,6 +210,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
+    if (discountsLoadMore) {
+      discountsLoadMore.addEventListener('click', async () => {
+        discountsLoadMore.disabled = true;
+        try {
+          const nextPage = discountsPage + 1;
+          const res = await authorizedFetch(`${API_BASE}/admin/discounts?limit=${PAGE_LIMIT}&page=${nextPage}`);
+          const chunk = await res.json();
+          if (Array.isArray(chunk) && chunk.length) {
+            discountsPage = nextPage;
+            discountsCache = discountsCache.concat(chunk);
+            const appendedHtml = chunk.map(d => `
+              <tr data-discount-row="${d._id}">
+                <td>${d.title}</td>
+                <td><code>${d._id}</code> <button class="btn btn-sm btn-link p-0 ms-1" data-copy-id="${d._id}">Copy</button></td>
+                <td>${d.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
+                <td>${(d.applications||[]).length}</td>
+                <td class="text-end">
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-secondary" data-toggle-active="${d._id}" data-active="${d.isActive}">${d.isActive?'Deactivate':'Activate'}</button>
+                    <button class="btn btn-sm btn-outline-danger" data-del-discount="${d._id}">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            `).join('');
+            discountsTable.insertAdjacentHTML('beforeend', appendedHtml);
+          } else {
+            discountsLoadMore.textContent = 'No more';
+            discountsLoadMore.disabled = true;
+          }
+        } finally {
+          discountsLoadMore.disabled = false;
+        }
+      });
+    }
   }
 });
 

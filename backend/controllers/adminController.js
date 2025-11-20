@@ -5,7 +5,14 @@ import crypto from 'crypto';
 
 export const listUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select('-password');
+    const limit = Math.min(Number(req.query.limit) || 20, 100);
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const skip = (page - 1) * limit;
+    const users = await User.find()
+      .select('-password')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
     res.json(users);
   } catch (e) { next(e); }
 };
@@ -45,7 +52,13 @@ export const createDiscount = async (req, res, next) => {
 
 export const listDiscounts = async (req, res, next) => {
   try {
-    const discounts = await Discount.find();
+    const limit = Math.min(Number(req.query.limit) || 20, 100);
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const skip = (page - 1) * limit;
+    const discounts = await Discount.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
     res.json(discounts);
   } catch (e) { next(e); }
 };
