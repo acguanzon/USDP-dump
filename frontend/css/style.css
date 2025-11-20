@@ -54,6 +54,8 @@ body {
   border: none;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .card-hover:hover {
@@ -77,6 +79,11 @@ footer {
 .nav-underline .nav-link.active {
   color: var(--color-primary);
   border-bottom: 2px solid var(--color-primary);
+}
+
+.tab-pane {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
 }
 
 .pill {

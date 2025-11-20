@@ -1,11 +1,11 @@
 async function fetchUsers() {
   const loadingRow = document.getElementById('usersLoading');
-  if (loadingRow) loadingRow.style.display = '';
+  if (loadingRow) loadingRow.style.visibility = 'visible';
   const res = await authorizedFetch(`${API_BASE}/admin/users`);
   const users = await res.json();
   const table = document.getElementById('usersTable');
   if (!table) return;
-  table.innerHTML = users.map(u => `
+  const html = users.map(u => `
     <tr>
       <td>${u.name}</td>
       <td>${u.email}</td>
@@ -21,26 +21,30 @@ async function fetchUsers() {
     </tr>
   `).join('');
 
-  table.querySelectorAll('[data-role]').forEach(sel => {
-    sel.addEventListener('change', async () => {
-      const id = sel.getAttribute('data-role');
-      const role = sel.value;
-      const resUp = await authorizedFetch(`${API_BASE}/admin/users/${id}`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role })
+  requestAnimationFrame(() => {
+    table.innerHTML = html;
+
+    table.querySelectorAll('[data-role]').forEach(sel => {
+      sel.addEventListener('change', async () => {
+        const id = sel.getAttribute('data-role');
+        const role = sel.value;
+        const resUp = await authorizedFetch(`${API_BASE}/admin/users/${id}`, {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role })
+        });
+        if (!resUp.ok) alert('Failed to update');
       });
-      if (!resUp.ok) alert('Failed to update');
     });
-  });
-  table.querySelectorAll('[data-del]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-del');
-      if (!confirm('Delete this user?')) return;
-      const resDel = await authorizedFetch(`${API_BASE}/admin/users/${id}`, { method: 'DELETE' });
-      if (resDel.ok) fetchUsers(); else alert('Failed to delete');
+    table.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-del');
+        if (!confirm('Delete this user?')) return;
+        const resDel = await authorizedFetch(`${API_BASE}/admin/users/${id}`, { method: 'DELETE' });
+        if (resDel.ok) fetchUsers(); else alert('Failed to delete');
+      });
     });
+    if (loadingRow) loadingRow.style.visibility = 'hidden';
   });
-  if (loadingRow) loadingRow.style.display = 'none';
 }
 
 function initAddUser() {
@@ -62,12 +66,12 @@ function initAddUser() {
 
 async function fetchDiscounts() {
   const loadingRow = document.getElementById('discountsLoading');
-  if (loadingRow) loadingRow.style.display = '';
+  if (loadingRow) loadingRow.style.visibility = 'visible';
   const res = await authorizedFetch(`${API_BASE}/admin/discounts`);
   const discounts = await res.json();
   const table = document.getElementById('discountsTable');
   if (!table) return;
-  table.innerHTML = discounts.map(d => `
+  const html = discounts.map(d => `
     <tr>
       <td>${d.title}</td>
       <td><code>${d._id}</code> <button class="btn btn-sm btn-link p-0 ms-1" data-copy-id="${d._id}">Copy</button></td>
@@ -82,45 +86,48 @@ async function fetchDiscounts() {
     </tr>
   `).join('');
 
-  table.querySelectorAll('[data-toggle-active]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-toggle-active');
-      const isActive = btn.getAttribute('data-active') === 'true';
-      const resUp = await authorizedFetch(`${API_BASE}/admin/discounts/${id}`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !isActive })
-      });
-      if (resUp.ok) fetchDiscounts(); else alert('Failed to update');
-    });
-  });
-  table.querySelectorAll('[data-del-discount]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-del-discount');
-      if (!confirm('Delete this discount?')) return;
-      const resDel = await authorizedFetch(`${API_BASE}/admin/discounts/${id}`, { method: 'DELETE' });
-      if (resDel.ok) fetchDiscounts(); else alert('Failed to delete');
-    });
-  });
+  requestAnimationFrame(() => {
+    table.innerHTML = html;
 
-  // Copy ID handlers
-  table.querySelectorAll('[data-copy-id]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const id = btn.getAttribute('data-copy-id');
-      try {
-        if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(id);
-        } else {
-          const ta = document.createElement('textarea');
-          ta.value = id; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-        }
-        btn.textContent = 'Copied';
-        setTimeout(() => btn.textContent = 'Copy', 1200);
-      } catch {
-        alert('Copy failed. Manually select the ID to copy.');
-      }
+    table.querySelectorAll('[data-toggle-active]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-toggle-active');
+        const isActive = btn.getAttribute('data-active') === 'true';
+        const resUp = await authorizedFetch(`${API_BASE}/admin/discounts/${id}`, {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isActive: !isActive })
+        });
+        if (resUp.ok) fetchDiscounts(); else alert('Failed to update');
+      });
     });
+    table.querySelectorAll('[data-del-discount]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-del-discount');
+        if (!confirm('Delete this discount?')) return;
+        const resDel = await authorizedFetch(`${API_BASE}/admin/discounts/${id}`, { method: 'DELETE' });
+        if (resDel.ok) fetchDiscounts(); else alert('Failed to delete');
+      });
+    });
+
+    table.querySelectorAll('[data-copy-id]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-copy-id');
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(id);
+          } else {
+            const ta = document.createElement('textarea');
+            ta.value = id; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+          }
+          btn.textContent = 'Copied';
+          setTimeout(() => btn.textContent = 'Copy', 1200);
+        } catch {
+          alert('Copy failed. Manually select the ID to copy.');
+        }
+      });
+    });
+    if (loadingRow) loadingRow.style.visibility = 'hidden';
   });
-  if (loadingRow) loadingRow.style.display = 'none';
 }
 
 function initAddDiscount() {
