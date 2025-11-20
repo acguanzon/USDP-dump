@@ -3,29 +3,14 @@ let discountsCache = [];
 let usersPage = 1;
 let discountsPage = 1;
 const PAGE_LIMIT = 20;
+const ROW_HEIGHT = 56;
+const VIRTUAL_WINDOW = 40;
 
 function renderUsers(users) {
   usersCache = Array.isArray(users) ? users : [];
   const loadingRow = document.getElementById('usersLoading');
-  const table = document.getElementById('usersTable');
-  if (!table) return;
-  const html = usersCache.map(u => `
-    <tr data-user-row="${u._id}">
-      <td>${u.name}</td>
-      <td>${u.email}</td>
-      <td>
-        <select class="form-select form-select-sm" data-role="${u._id}">
-          <option value="user" ${u.role==='user'?'selected':''}>User</option>
-          <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-        </select>
-      </td>
-      <td class="text-end">
-        <button class="btn btn-sm btn-outline-danger" data-del="${u._id}">Delete</button>
-      </td>
-    </tr>
-  `).join('');
-  table.innerHTML = html;
   if (loadingRow) loadingRow.style.visibility = 'hidden';
+  renderUsersVirtual(0);
 }
 
 function initAddUser() {
@@ -48,9 +33,29 @@ function initAddUser() {
 function renderDiscounts(discounts) {
   discountsCache = Array.isArray(discounts) ? discounts : [];
   const loadingRow = document.getElementById('discountsLoading');
-  const table = document.getElementById('discountsTable');
-  if (!table) return;
-  const html = discountsCache.map(d => `
+  if (loadingRow) loadingRow.style.visibility = 'hidden';
+  renderDiscountsVirtual(0);
+}
+
+function usersRowHTML(u) {
+  return `
+    <tr data-user-row="${u._id}">
+      <td>${u.name}</td>
+      <td>${u.email}</td>
+      <td>
+        <select class="form-select form-select-sm" data-role="${u._id}">
+          <option value="user" ${u.role==='user'?'selected':''}>User</option>
+          <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+        </select>
+      </td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-outline-danger" data-del="${u._id}">Delete</button>
+      </td>
+    </tr>`;
+}
+
+function discountsRowHTML(d) {
+  return `
     <tr data-discount-row="${d._id}">
       <td>${d.title}</td>
       <td><code>${d._id}</code> <button class="btn btn-sm btn-link p-0 ms-1" data-copy-id="${d._id}">Copy</button></td>
@@ -62,10 +67,50 @@ function renderDiscounts(discounts) {
           <button class="btn btn-sm btn-outline-danger" data-del-discount="${d._id}">Delete</button>
         </div>
       </td>
-    </tr>
-  `).join('');
-  table.innerHTML = html;
-  if (loadingRow) loadingRow.style.visibility = 'hidden';
+    </tr>`;
+}
+
+function renderUsersVirtual(startIndex) {
+  const table = document.getElementById('usersTable');
+  if (!table) return;
+  const total = usersCache.length;
+  const from = Math.max(0, Math.min(startIndex, Math.max(0, total - 1)));
+  const to = Math.min(total, from + VIRTUAL_WINDOW);
+  const topPad = from * ROW_HEIGHT;
+  const bottomPad = Math.max(0, (total - to) * ROW_HEIGHT);
+  const rowsHTML = usersCache.slice(from, to).map(usersRowHTML).join('');
+  table.innerHTML = `${topPad?`<tr style="height:${topPad}px"></tr>`:''}${rowsHTML}${bottomPad?`<tr style="height:${bottomPad}px"></tr>`:''}`;
+}
+
+function renderDiscountsVirtual(startIndex) {
+  const table = document.getElementById('discountsTable');
+  if (!table) return;
+  const total = discountsCache.length;
+  const from = Math.max(0, Math.min(startIndex, Math.max(0, total - 1)));
+  const to = Math.min(total, from + VIRTUAL_WINDOW);
+  const topPad = from * ROW_HEIGHT;
+  const bottomPad = Math.max(0, (total - to) * ROW_HEIGHT);
+  const rowsHTML = discountsCache.slice(from, to).map(discountsRowHTML).join('');
+  table.innerHTML = `${topPad?`<tr style="height:${topPad}px"></tr>`:''}${rowsHTML}${bottomPad?`<tr style="height:${bottomPad}px"></tr>`:''}`;
+}
+
+function throttle(fn, wait = 16) {
+  let last = 0, timer;
+  return function(...args) {
+    const now = Date.now();
+    const remaining = wait - (now - last);
+    if (remaining <= 0) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      last = now;
+      fn.apply(this, args);
+    } else if (!timer) {
+      timer = setTimeout(() => {
+        last = Date.now();
+        timer = null;
+        fn.apply(this, args);
+      }, remaining);
+    }
+  };
 }
 
 function initAddDiscount() {
@@ -102,6 +147,7 @@ async function loadAdmin() {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!location.pathname.endsWith('admin-dashboard.html')) return;
+  initPerfMonitor();
   loadAdmin();
   initAddUser();
   initAddDiscount();
@@ -113,6 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnScanSuccess = document.getElementById('btnScanSuccess');
   const btnScanFail = document.getElementById('btnScanFail');
   const btnPostAnnouncement = document.getElementById('btnPostAnnouncement');
+  const usersScroll = usersTable ? usersTable.closest('.virtual-table') : null;
+  const discountsScroll = discountsTable ? discountsTable.closest('.virtual-table') : null;
   if (usersTable) {
     usersTable.addEventListener('change', async (e) => {
       const sel = e.target.closest('[data-role]');
@@ -138,6 +186,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (row) row.remove();
       usersCache = usersCache.filter(u => u._id !== id);
     });
+    if (usersScroll) {
+      usersScroll.addEventListener('scroll', throttle(() => {
+        const index = Math.floor(usersScroll.scrollTop / ROW_HEIGHT);
+        renderUsersVirtual(index);
+      }));
+    }
     if (usersLoadMore) {
       usersLoadMore.addEventListener('click', async () => {
         usersLoadMore.disabled = true;
@@ -148,22 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
           if (Array.isArray(chunk) && chunk.length) {
             usersPage = nextPage;
             usersCache = usersCache.concat(chunk);
-            const appendedHtml = chunk.map(u => `
-              <tr data-user-row="${u._id}">
-                <td>${u.name}</td>
-                <td>${u.email}</td>
-                <td>
-                  <select class="form-select form-select-sm" data-role="${u._id}">
-                    <option value="user" ${u.role==='user'?'selected':''}>User</option>
-                    <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-                  </select>
-                </td>
-                <td class="text-end">
-                  <button class="btn btn-sm btn-outline-danger" data-del="${u._id}">Delete</button>
-                </td>
-              </tr>
-            `).join('');
-            usersTable.insertAdjacentHTML('beforeend', appendedHtml);
+            const index = Math.floor((usersScroll?.scrollTop||0) / ROW_HEIGHT);
+            renderUsersVirtual(index);
           } else {
             usersLoadMore.textContent = 'No more';
             usersLoadMore.disabled = true;
@@ -213,6 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
+    if (discountsScroll) {
+      discountsScroll.addEventListener('scroll', throttle(() => {
+        const index = Math.floor(discountsScroll.scrollTop / ROW_HEIGHT);
+        renderDiscountsVirtual(index);
+      }));
+    }
     if (discountsLoadMore) {
       discountsLoadMore.addEventListener('click', async () => {
         discountsLoadMore.disabled = true;
@@ -223,21 +269,8 @@ document.addEventListener('DOMContentLoaded', () => {
           if (Array.isArray(chunk) && chunk.length) {
             discountsPage = nextPage;
             discountsCache = discountsCache.concat(chunk);
-            const appendedHtml = chunk.map(d => `
-              <tr data-discount-row="${d._id}">
-                <td>${d.title}</td>
-                <td><code>${d._id}</code> <button class="btn btn-sm btn-link p-0 ms-1" data-copy-id="${d._id}">Copy</button></td>
-                <td>${d.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
-                <td>${(d.applications||[]).length}</td>
-                <td class="text-end">
-                  <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-secondary" data-toggle-active="${d._id}" data-active="${d.isActive}">${d.isActive?'Deactivate':'Activate'}</button>
-                    <button class="btn btn-sm btn-outline-danger" data-del-discount="${d._id}">Delete</button>
-                  </div>
-                </td>
-              </tr>
-            `).join('');
-            discountsTable.insertAdjacentHTML('beforeend', appendedHtml);
+            const index = Math.floor((discountsScroll?.scrollTop||0) / ROW_HEIGHT);
+            renderDiscountsVirtual(index);
           } else {
             discountsLoadMore.textContent = 'No more';
             discountsLoadMore.disabled = true;
@@ -292,6 +325,49 @@ function postAnnouncement() {
   const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
   alert('Announcement posted successfully');
   modal.hide();
+}
+
+function initPerfMonitor() {
+  const el = document.createElement('div');
+  el.id = 'perfMonitor';
+  el.style.position = 'fixed';
+  el.style.right = '10px';
+  el.style.bottom = '10px';
+  el.style.zIndex = '9999';
+  el.style.background = 'rgba(0,0,0,0.6)';
+  el.style.color = '#0f0';
+  el.style.padding = '8px 10px';
+  el.style.borderRadius = '6px';
+  el.style.font = '12px/1 monospace';
+  el.textContent = 'FPS: -- | Render: --ms';
+  document.body.appendChild(el);
+  let frames = 0, last = performance.now(), lastSec = performance.now();
+  function loop(now) {
+    frames++;
+    if (now - lastSec >= 1000) {
+      const fps = Math.round((frames * 1000) / (now - lastSec));
+      el.textContent = `FPS: ${fps} | Render: ${last.toFixed(1)}ms`;
+      el.style.color = fps < 50 ? '#ff3b3b' : '#0f0';
+      frames = 0;
+      lastSec = now;
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  const origRenderUsers = renderUsersVirtual;
+  const origRenderDiscounts = renderDiscountsVirtual;
+  renderUsersVirtual = function(startIndex) {
+    const t0 = performance.now();
+    origRenderUsers(startIndex);
+    last = performance.now() - t0;
+    if (last > 100) console.warn('Users render >100ms');
+  };
+  renderDiscountsVirtual = function(startIndex) {
+    const t0 = performance.now();
+    origRenderDiscounts(startIndex);
+    last = performance.now() - t0;
+    if (last > 100) console.warn('Discounts render >100ms');
+  };
 }
 
 function initTokens() {
