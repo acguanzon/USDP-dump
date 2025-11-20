@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  USDP Portal integrated as a standalone optional page within UNOR-SSG.
+  This file is self-contained and does not alter existing configurations.
+  Aligned dependency versions to match existing frontend for compatibility.
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USDP Portal - University Student Development Program</title>
+    <!-- Bootstrap 5 CSS + Icons (aligned with existing frontend versions) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-violet: #6D28D9;
+            --primary-blue: #1E40AF;
+            --gold: #F59E0B;
+            --gold-dark: #D97706;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-violet), var(--primary-blue)) !important;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-violet), var(--primary-blue));
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .border-violet {
+            border-left: 4px solid var(--primary-violet) !important;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-violet), var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .card {
+            box-shadow: var(--card-shadow);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .qr-scanner {
+            background: #000;
+            border-radius: 10px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scanner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, transparent 49%, rgba(0,255,0,0.1) 50%, transparent 51%),
+                linear-gradient(transparent 49%, rgba(0,255,0,0.1) 50%, transparent 51%);
+            pointer-events: none;
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #00ff00;
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        
+        .student-card-preview {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .user-card {
+            background: linear-gradient(135deg, #4F46E5, #7E22CE);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-violet), var(--primary-blue));
+            color: white;
+            border: none;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--primary-violet);
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-violet), var(--primary-blue));
+        }
+        
+        .login-card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .login-header {
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .user-avatar i {
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .role-selector {
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .role-option {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .role-option.active {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
+        
+        .role-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .stats-card {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .stats-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .stats-icon.admin {
+            background: linear-gradient(135deg, var(--primary-violet), var(--primary-blue));
+        }
+        
+        .stats-icon.user {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+        }
+        
+        .stats-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .benefit-card {
+            border-left: 4px solid var(--gold);
+        }
+        
+        .event-card {
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #EF4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .section-content {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(109, 40, 217, 0.05);
+        }
+        
+        .list-group-item.active {
+            background: linear-gradient(135deg, var(--primary-violet), var(--primary-blue));
+            border-color: var(--primary-violet);
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen">
+        <div class="login-container">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 col-lg-5">
+                        <div class="card login-card">
+                            <div class="card-header bg-gradient-primary text-white login-header">
+                                <div class="user-avatar">
+                                    <i class="bi bi-mortarboard-fill"></i>
+                                </div>
+                                <h3 class="mb-1">USDP Portal</h3>
+                                <p class="mb-0">University Student Development Program</p>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="role-selector">
+                                    <div class="role-option active" id="adminRole" onclick="selectRole('admin')">
+                                        <i class="bi bi-shield-check me-1"></i> Admin
+                                    </div>
+                                    <div class="role-option" id="userRole" onclick="selectRole('user')">
+                                        <i class="bi bi-person me-1"></i> Student
+                                    </div>
+                                </div>
+                                
+                                <form id="loginForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email Address</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                            <input type="email" class="form-control" id="emailInput" placeholder="admin@usdp.edu.ph" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input type="password" class="form-control" id="passwordInput" value="password123" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 py-2">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                                        <span id="loginButtonText">Sign In as Admin</span>
+                                    </button>
+                                </form>
+                                
+                                <div class="mt-4 text-center">
+                                    <p class="text-muted mb-2">Demo Credentials:</p>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <small class="text-muted">
+                                                <strong>Admin:</strong><br>
+                                                admin@usdp.edu.ph<br>
+                                                password123
+                                            </small>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">
+                                                <strong>Student:</strong><br>
+                                                maria.santos@usdp.edu.ph<br>
+                                                password123
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="d-none">
+        <nav class="navbar navbar-dark bg-gradient-primary shadow-sm">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">
+                    <i class="bi bi-shield-check me-2"></i>USDP Admin Portal
+                </span>
+                <div class="navbar-nav ms-auto">
+                    <div class="d-flex align-items-center">
+                        <span class="text-white me-3">Welcome, Administrator</span>
+                        <button class="btn btn-outline-light" onclick="logout()">
+                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid mt-4">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <div class="card shadow-sm sidebar">
+                        <div class="card-body text-center">
+                            <div class="stats-icon admin mb-3">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <h5 class="card-title">Administrator</h5>
+                            <p class="text-muted">System Admin</p>
+                            <span class="badge bg-primary">ADMIN</span>
+                            
+                            <div class="mt-4">
+                                <div class="list-group list-group-flush">
+                                    <a href="#" class="list-group-item list-group-item-action active" onclick="showSection('dashboard')">
+                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('users')">
+                                        <i class="bi bi-people me-2"></i>User Management
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('events')">
+                                        <i class="bi bi-calendar-event me-2"></i>Event Management
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('announcements')">
+                                        <i class="bi bi-megaphone me-2"></i>Announcements
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('scanner')">
+                                        <i class="bi bi-qr-code me-2"></i>QR Scanner
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9">
+                    <!-- Dashboard Section -->
+                    <div id="dashboardSection" class="section-content">
+                        <h2 class="text-gradient mb-4">Admin Dashboard</h2>
+                        
+                        <!-- Stats Row -->
+                        <div class="row mb-4">
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="card border-violet shadow-sm h-100 stats-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title text-muted">Total Students</h6>
+                                                <h3 class="text-gradient">487</h3>
+                                            </div>
+                                            <i class="bi bi-people text-primary" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <small class="text-success">↑ 12 this month</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="card border-violet shadow-sm h-100 stats-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title text-muted">Active Events</h6>
+                                                <h3 class="text-gradient">24</h3>
+                                            </div>
+                                            <i class="bi bi-calendar-check text-success" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <small class="text-primary">3 upcoming</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="card border-violet shadow-sm h-100 stats-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title text-muted">Benefits Distributed</h6>
+                                                <h3 class="text-gradient">1,248</h3>
+                                            </div>
+                                            <i class="bi bi-gift text-warning" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <small class="text-success">This semester</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="card border-violet shadow-sm h-100 stats-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title text-muted">System Status</h6>
+                                                <h3 class="text-success">Online</h3>
+                                            </div>
+                                            <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <small class="text-success">All systems operational</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-gradient-primary text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-lightning me-2"></i>Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-primary w-100 py-3 d-flex flex-column align-items-center" onclick="showSection('events')">
+                                            <i class="bi bi-calendar-plus display-6 mb-2"></i>
+                                            <span>Create Event</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button class="btn btn-success w-100 py-3 d-flex flex-column align-items-center" onclick="showSection('users')">
+                                            <i class="bi bi-person-plus display-6 mb-2"></i>
+                                            <span>Add Student</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button class="btn btn-info w-100 py-3 d-flex flex-column align-items-center" onclick="showSection('announcements')">
+                                            <i class="bi bi-megaphone display-6 mb-2"></i>
+                                            <span>Post Announcement</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button class="btn btn-warning w-100 py-3 d-flex flex-column align-items-center" onclick="showSection('scanner')">
+                                            <i class="bi bi-qr-code display-6 mb-2"></i>
+                                            <span>QR Scanner</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Management Section -->
+                    <div id="usersSection" class="section-content d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="text-gradient mb-0">User Management</h2>
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                                <i class="bi bi-person-plus me-2"></i>Add New Student
+                            </button>
+                        </div>
+
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Student ID</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Card Type</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>2024-001</td>
+                                                <td>Maria Santos</td>
+                                                <td>maria.santos@usdp.edu.ph</td>
+                                                <td><span class="badge bg-warning">Gold</span></td>
+                                                <td><span class="badge bg-success">Active</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
+                                                    <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>2024-002</td>
+                                                <td>Juan Dela Cruz</td>
+                                                <td>juan.delacruz@usdp.edu.ph</td>
+                                                <td><span class="badge bg-primary">Blue</span></td>
+                                                <td><span class="badge bg-success">Active</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
+                                                    <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Management Section -->
+                    <div id="eventsSection" class="section-content d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="text-gradient mb-0">Event Management</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal">
+                                <i class="bi bi-calendar-plus me-2"></i>Create New Event
+                            </button>
+                        </div>
+
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 event-card">
+                                            <div class="card-body">
+                                                <span class="badge bg-success mb-2">Active</span>
+                                                <h6 class="card-title">Rice Distribution</h6>
+                                                <p class="card-text">Monthly rice distribution for all students</p>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">Dec 15, 2024</small>
+                                                    <small class="text-muted">245/250</small>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-outline-primary w-100">Manage</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card h-100 event-card">
+                                            <div class="card-body">
+                                                <span class="badge bg-warning mb-2">Upcoming</span>
+                                                <h6 class="card-title">Educational Supplies</h6>
+                                                <p class="card-text">Distribution of school materials</p>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">Dec 20, 2024</small>
+                                                    <small class="text-muted">0/300</small>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-outline-primary w-100">Manage</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Announcements Section -->
+                    <div id="announcementsSection" class="section-content d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="text-gradient mb-0">Announcements</h2>
+                            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#postAnnouncementModal">
+                                <i class="bi bi-megaphone me-2"></i>Post New Announcement
+                            </button>
+                        </div>
+
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-primary mb-1">Scholarship Applications Open</h6>
+                                            <p class="mb-1">Applications for Indigenous Student Scholarship Program are now open until December 15, 2024.</p>
+                                            <small class="text-muted">Posted 2 days ago • Target: All Students</small>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="text-primary mb-1">Rice Distribution Schedule</h6>
+                                            <p class="mb-1">Monthly rice distribution will be on December 15, 2024 at the main campus.</p>
+                                            <small class="text-muted">Posted 1 week ago • Target: Gold Card Only</small>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QR Scanner Section -->
+                    <div id="scannerSection" class="section-content d-none">
+                        <h2 class="text-gradient mb-4">QR Code Scanner</h2>
+                        
+                        <div class="row">
+                            <div class="col-lg-8 mb-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-gradient-primary text-white">
+                                        <h5 class="card-title mb-0"><i class="bi bi-qr-code me-2"></i>Scanner</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="qr-scanner">
+                                            <div class="scanner-overlay">
+                                                <div class="scan-line"></div>
+                                            </div>
+                                            <div class="text-center">
+                                                <i class="bi bi-camera display-1 mb-3"></i>
+                                                <p>Point camera at student's QR code</p>
+                                                <small class="text-muted">Scanner simulation active</small>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3 text-center">
+                                            <button class="btn btn-warning me-2" onclick="simulateScan('success')">
+                                                <i class="bi bi-check-circle me-2"></i>Simulate Successful Scan
+                                            </button>
+                                            <button class="btn btn-danger" onclick="simulateScan('error')">
+                                                <i class="bi bi-x-circle me-2"></i>Simulate Invalid Scan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-gradient-primary text-white">
+                                        <h5 class="card-title mb-0"><i class="bi bi-info-circle me-2"></i>Scan Results</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="scanResults">
+                                            <p class="text-muted text-center">No scans yet</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="studentDashboard" class="d-none">
+        <nav class="navbar navbar-dark bg-gradient-primary shadow-sm">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">
+                    <i class="bi bi-mortarboard-fill me-2"></i>USDP Student Portal
+                </span>
+                <div class="navbar-nav ms-auto">
+                    <div class="d-flex align-items-center">
+                        <div class="position-relative me-3">
+                            <button class="btn btn-outline-light" onclick="showSection('notifications', 'student')">
+                                <i class="bi bi-bell"></i>
+                            </button>
+                            <span class="notification-badge">3</span>
+                        </div>
+                        <span class="text-white me-3">Welcome, Maria Santos</span>
+                        <button class="btn btn-outline-light" onclick="logout()">
+                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid mt-4">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <div class="card shadow-sm sidebar">
+                        <div class="card-body text-center">
+                            <div class="user-card mb-3">
+                                <h6 class="mb-2">USDP STUDENT CARD</h6>
+                                <h5 class="mb-1">Maria Santos</h5>
+                                <p class="mb-3">Student ID: 2024-001</p>
+                                <div class="bg-white rounded p-2 d-inline-block">
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                        <span class="text-muted small">QR CODE</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h5 class="card-title">Maria Santos</h5>
+                            <p class="text-muted">Gold Card Holder</p>
+                            <span class="badge bg-warning">GOLD</span>
+                            
+                            <div class="mt-4">
+                                <div class="list-group list-group-flush">
+                                    <a href="#" class="list-group-item list-group-item-action active" onclick="showSection('dashboard', 'student')">
+                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('benefits', 'student')">
+                                        <i class="bi bi-gift me-2"></i>My Benefits
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('events', 'student')">
+                                        <i class="bi bi-calendar-event me-2"></i>Events
+                                    </a>
+                                    <a href="#" class="list-group-item list-group-item-action" onclick="showSection('profile', 'student')">
+                                        <i class="bi bi-person me-2"></i>My Profile
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-9">
+                    <!-- Dashboard Section -->
+                    <div id="studentDashboardSection" class="section-content">
+                        <h2 class="text-gradient mb-4">Student Dashboard</h2>
+                        
+                        <!-- Stats Row -->
+                        <div class="row mb-4">
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="card border-violet shadow-sm h-100 stats-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title text-muted">Benefits Claimed</h6>
+                                                <h3 class="text-gradient">12</h3>
+                                            </div>
+                                            <i class="bi bi-gift text-warning" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <small class="text-success">This semester</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="card border-violet shadow-sm h-100 stats-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title text-muted">Upcoming Events</h6>
+                                                <h3 class="text-gradient">3</h3>
+                                            </div>
+                                            <i class="bi bi-calendar-check text-success" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <small class="text-primary">You're eligible for all</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="card border-violet shadow-sm h-100 stats-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title text-muted">Card Status</h6>
+                                                <h3 class="text-success">Active</h3>
+                                            </div>
+                                            <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <small class="text-success">Gold Card</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6 mb-3">
+                                <div class="card border-violet shadow-sm h-100 stats-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title text-muted">Notifications</h6>
+                                                <h3 class="text-gradient">3</h3>
+                                            </div>
+                                            <i class="bi bi-bell text-info" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <small class="text-primary">Unread messages</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Announcements -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-gradient-primary text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-megaphone me-2"></i>Latest Announcements</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item">
+                                        <h6 class="text-primary mb-1">Scholarship Applications Open</h6>
+                                        <p class="mb-1">Applications for Indigenous Student Scholarship Program are now open until December 15, 2024.</p>
+                                        <small class="text-muted">Posted 2 days ago</small>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <h6 class="text-primary mb-1">Rice Distribution Schedule</h6>
+                                        <p class="mb-1">Monthly rice distribution will be on December 15, 2024 at the main campus.</p>
+                                        <small class="text-muted">Posted 1 week ago</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upcoming Events -->
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-gradient-primary text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-calendar-event me-2"></i>Upcoming Events</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 event-card">
+                                            <div class="card-body">
+                                                <span class="badge bg-success mb-2">Eligible</span>
+                                                <h6 class="card-title">Rice Distribution</h6>
+                                                <p class="card-text">Monthly rice distribution for all students</p>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">Dec 15, 2024</small>
+                                                    <small class="text-muted">Main Campus</small>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-outline-primary w-100">View Details</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 event-card">
+                                            <div class="card-body">
+                                                <span class="badge bg-success mb-2">Eligible</span>
+                                                <h6 class="card-title">Educational Supplies</h6>
+                                                <p class="card-text">Distribution of school materials</p>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">Dec 20, 2024</small>
+                                                    <small class="text-muted">Student Center</small>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button class="btn btn-sm btn-outline-primary w-100">View Details</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Benefits Section -->
+                    <div id="studentBenefitsSection" class="section-content d-none">
+                        <h2 class="text-gradient mb-4">My Benefits</h2>
+
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-gradient-primary text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-gift me-2"></i>Benefit History</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Benefit Type</th>
+                                                <th>Event</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Nov 15, 2024</td>
+                                                <td>Rice Distribution</td>
+                                                <td>Monthly Rice</td>
+                                                <td><span class="badge bg-success">Claimed</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary">View Receipt</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Oct 20, 2024</td>
+                                                <td>Educational Supplies</td>
+                                                <td>School Materials</td>
+                                                <td><span class="badge bg-success">Claimed</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary">View Receipt</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Dec 15, 2024</td>
+                                                <td>Rice Distribution</td>
+                                                <td>Monthly Rice</td>
+                                                <td><span class="badge bg-warning">Upcoming</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-secondary" disabled>Not Available</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Events Section -->
+                    <div id="studentEventsSection" class="section-content d-none">
+                        <h2 class="text-gradient mb-4">Events</h2>
+
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <ul class="nav nav-tabs mb-4">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" onclick="showEventTab('upcoming')">Upcoming Events</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" onclick="showEventTab('past')">Past Events</a>
+                                    </li>
+                                </ul>
+
+                                <div id="upcomingEvents">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card h-100 event-card">
+                                                <div class="card-body">
+                                                    <span class="badge bg-success mb-2">Eligible</span>
+                                                    <h6 class="card-title">Rice Distribution</h6>
+                                                    <p class="card-text">Monthly rice distribution for all students</p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <small class="text-muted">Dec 15, 2024</small>
+                                                        <small class="text-muted">Main Campus</small>
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <button class="btn btn-sm btn-outline-primary w-100">View Details</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card h-100 event-card">
+                                                <div class="card-body">
+                                                    <span class="badge bg-success mb-2">Eligible</span>
+                                                    <h6 class="card-title">Educational Supplies</h6>
+                                                    <p class="card-text">Distribution of school materials</p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <small class="text-muted">Dec 20, 2024</small>
+                                                        <small class="text-muted">Student Center</small>
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <button class="btn btn-sm btn-outline-primary w-100">View Details</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="pastEvents" class="d-none">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card h-100 event-card">
+                                                <div class="card-body">
+                                                    <span class="badge bg-secondary mb-2">Completed</span>
+                                                    <h6 class="card-title">Rice Distribution</h6>
+                                                    <p class="card-text">Monthly rice distribution for all students</p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <small class="text-muted">Nov 15, 2024</small>
+                                                        <small class="text-muted">Main Campus</small>
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <button class="btn btn-sm btn-outline-primary w-100">View Details</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card h-100 event-card">
+                                                <div class="card-body">
+                                                    <span class="badge bg-secondary mb-2">Completed</span>
+                                                    <h6 class="card-title">Educational Supplies</h6>
+                                                    <p class="card-text">Distribution of school materials</p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <small class="text-muted">Oct 20, 2024</small>
+                                                        <small class="text-muted">Student Center</small>
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <button class="btn btn-sm btn-outline-primary w-100">View Details</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Section -->
+                    <div id="studentProfileSection" class="section-content d-none">
+                        <h2 class="text-gradient mb-4">My Profile</h2>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-gradient-primary text-white">
+                                        <h5 class="card-title mb-0"><i class="bi bi-person me-2"></i>Personal Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">First Name</label>
+                                                    <input type="text" class="form-control" value="Maria" readonly>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Last Name</label>
+                                                    <input type="text" class="form-control" value="Santos" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Email</label>
+                                                    <input type="email" class="form-control" value="maria.santos@usdp.edu.ph" readonly>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Student ID</label>
+                                                    <input type="text" class="form-control" value="2024-001" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Program/Course</label>
+                                                <input type="text" class="form-control" value="BS Computer Science" readonly>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Card Type</label>
+                                                <input type="text" class="form-control" value="Gold Card" readonly>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-gradient-primary text-white">
+                                        <h5 class="card-title mb-0"><i class="bi bi-qr-code me-2"></i>Student QR Code</h5>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="bg-light rounded p-3 d-inline-block mb-3">
+                                            <div class="bg-white rounded d-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
+                                                <span class="text-muted">QR CODE</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-muted">Present this QR code at events to claim benefits</p>
+                                        <button class="btn btn-outline-primary w-100">
+                                            <i class="bi bi-download me-2"></i>Download QR Code
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-gradient-primary text-white">
+                    <h5 class="modal-title">Add New Student</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStudentForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" placeholder="Enter first name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" placeholder="Enter last name" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" placeholder="student@usdp.edu.ph" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Student ID</label>
+                                <input type="text" class="form-control" placeholder="2024-001" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Card Type</label>
+                            <select class="form-select" required>
+                                <option value="">Select card type</option>
+                                <option value="gold">Gold Card</option>
+                                <option value="blue">Blue Card</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Program/Course</label>
+                            <input type="text" class="form-control" placeholder="e.g., BS Computer Science">
+                        </div>
+                    </form>
+                    
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">Preview</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="student-card-preview">
+                                <h6 class="mb-2">USDP STUDENT CARD</h6>
+                                <h5 class="mb-1">New Student</h5>
+                                <p class="mb-3">Student ID: --------</p>
+                                <div class="bg-white rounded p-2 d-inline-block">
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                        <span class="text-muted small">QR CODE</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="addStudent()">
+                        <i class="bi bi-person-plus me-2"></i>Add Student
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Event Modal -->
+    <div class="modal fade" id="createEventModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-gradient-primary text-white">
+                    <h5 class="modal-title">Create New Event</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createEventForm">
+                        <div class="mb-3">
+                            <label class="form-label">Event Title</label>
+                            <input type="text" class="form-control" placeholder="Enter event title" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Event Date</label>
+                                <input type="date" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Event Time</label>
+                                <input type="time" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Event Type</label>
+                            <select class="form-select" required>
+                                <option value="">Select event type</option>
+                                <option value="rice">Rice Distribution</option>
+                                <option value="supplies">Educational Supplies</option>
+                                <option value="financial">Financial Assistance</option>
+                                <option value="workshop">Workshop/Seminar</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Target Audience</label>
+                            <select class="form-select" required>
+                                <option value="all">All Students</option>
+                                <option value="gold">Gold Card Only</option>
+                                <option value="blue">Blue Card Only</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" placeholder="Enter event location">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" rows="3" placeholder="Enter event description"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="createEvent()">
+                        <i class="bi bi-calendar-plus me-2"></i>Create Event
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Announcement Modal -->
+    <div class="modal fade" id="postAnnouncementModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-gradient-primary text-white">
+                    <h5 class="modal-title">Post New Announcement</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="postAnnouncementForm">
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" class="form-control" placeholder="Enter announcement title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Content</label>
+                            <textarea class="form-control" rows="4" placeholder="Enter announcement content" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Target Audience</label>
+                            <select class="form-select" required>
+                                <option value="all">All Students</option>
+                                <option value="gold">Gold Card Only</option>
+                                <option value="blue">Blue Card Only</option>
+                            </select>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="publishImmediately">
+                            <label class="form-check-label" for="publishImmediately">
+                                Publish immediately
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-info" onclick="postAnnouncement()">
+                        <i class="bi bi-megaphone me-2"></i>Post Announcement
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS (aligned with existing frontend version) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global variables (scoped to this page)
+        let currentRole = 'admin';
+        let currentUserSection = 'dashboard';
+        let currentAdminSection = 'dashboard';
+
+        // Initialize the application (DOM listeners for demo login flow)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login form handler
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('emailInput').value;
+                const password = document.getElementById('passwordInput').value;
+                
+                // Simple authentication logic
+                if (currentRole === 'admin') {
+                    if (email === 'admin@usdp.edu.ph' && password === 'password123') {
+                        showAdminDashboard();
+                    } else {
+                        alert('Invalid admin credentials. Please use:\nEmail: admin@usdp.edu.ph\nPassword: password123');
+                    }
+                } else {
+                    if (email === 'maria.santos@usdp.edu.ph' && password === 'password123') {
+                        showStudentDashboard();
+                    } else {
+                        alert('Invalid student credentials. Please use:\nEmail: maria.santos@usdp.edu.ph\nPassword: password123');
+                    }
+                }
+            });
+        });
+
+        // Role selection (updates button text and email placeholder)
+        function selectRole(role) {
+            currentRole = role;
+            
+            // Update UI
+            document.getElementById('adminRole').classList.toggle('active', role === 'admin');
+            document.getElementById('userRole').classList.toggle('active', role === 'user');
+            
+            // Update button text
+            document.getElementById('loginButtonText').textContent = 
+                role === 'admin' ? 'Sign In as Admin' : 'Sign In as Student';
+                
+            // Update placeholder
+            document.getElementById('emailInput').placeholder = 
+                role === 'admin' ? 'admin@usdp.edu.ph' : 'student@usdp.edu.ph';
+        }
+
+        // Show admin dashboard (toggles section visibility for admin)
+        function showAdminDashboard() {
+            document.getElementById('loginScreen').classList.add('d-none');
+            document.getElementById('adminDashboard').classList.remove('d-none');
+            document.getElementById('studentDashboard').classList.add('d-none');
+            
+            // Show dashboard section by default
+            showSection('dashboard');
+        }
+
+        // Show student dashboard (toggles section visibility for student)
+        function showStudentDashboard() {
+            document.getElementById('loginScreen').classList.add('d-none');
+            document.getElementById('adminDashboard').classList.add('d-none');
+            document.getElementById('studentDashboard').classList.remove('d-none');
+            
+            // Show dashboard section by default
+            showSection('dashboard', 'student');
+        }
+
+        // Logout function (returns to login screen and resets form)
+        function logout() {
+            document.getElementById('loginScreen').classList.remove('d-none');
+            document.getElementById('adminDashboard').classList.add('d-none');
+            document.getElementById('studentDashboard').classList.add('d-none');
+            
+            // Reset form
+            document.getElementById('loginForm').reset();
+        }
+
+        // Show section based on user type (admin/student)
+        function showSection(sectionName, userType = 'admin') {
+            if (userType === 'admin') {
+                // Hide all admin sections
+                document.querySelectorAll('#adminDashboard .section-content').forEach(section => {
+                    section.classList.add('d-none');
+                });
+                
+                // Show selected admin section
+                document.getElementById(sectionName + 'Section').classList.remove('d-none');
+                
+                // Update active nav link
+                document.querySelectorAll('#adminDashboard .list-group-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                currentAdminSection = sectionName;
+            } else {
+                // Hide all student sections
+                document.querySelectorAll('#studentDashboard .section-content').forEach(section => {
+                    section.classList.add('d-none');
+                });
+                
+                // Show selected student section
+                document.getElementById('student' + sectionName.charAt(0).toUpperCase() + sectionName.slice(1) + 'Section').classList.remove('d-none');
+                
+                // Update active nav link
+                document.querySelectorAll('#studentDashboard .list-group-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                currentUserSection = sectionName;
+            }
+        }
+
+        // Show event tab for student
+        function showEventTab(tabName) {
+            document.getElementById('upcomingEvents').classList.toggle('d-none', tabName !== 'upcoming');
+            document.getElementById('pastEvents').classList.toggle('d-none', tabName !== 'past');
+            
+            // Update active tab
+            document.querySelectorAll('#studentEventsSection .nav-link').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Demo functions for admin actions
+        function addStudent() {
+            alert('✅ Student added successfully!\n\nA new Gold Card has been generated and the student has been added to the system.');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addStudentModal'));
+            modal.hide();
+        }
+
+        function createEvent() {
+            alert('🎉 Event created successfully!\n\nThe event has been scheduled and all eligible students have been notified.');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createEventModal'));
+            modal.hide();
+        }
+
+        function postAnnouncement() {
+            alert('📢 Announcement posted successfully!\n\nThe announcement has been published to all targeted students.');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('postAnnouncementModal'));
+            modal.hide();
+        }
+
+        function simulateScan(type) {
+            const resultsDiv = document.getElementById('scanResults');
+            
+            if (type === 'success') {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <h6><i class="bi bi-check-circle me-2"></i>Scan Successful!</h6>
+                        <p class="mb-1"><strong>Student:</strong> Maria Santos</p>
+                        <p class="mb-1"><strong>ID:</strong> 2024-001</p>
+                        <p class="mb-1"><strong>Card Type:</strong> Gold</p>
+                        <p class="mb-0"><strong>Event:</strong> Rice Distribution</p>
+                        <hr>
+                        <small class="text-success">Benefit successfully recorded at ${new Date().toLocaleTimeString()}</small>
+                    </div>
+                `;
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h6><i class="bi bi-x-circle me-2"></i>Invalid QR Code</h6>
+                        <p class="mb-0">The scanned QR code is not recognized in the system or is not valid for this event.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Add interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Card hover effects
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

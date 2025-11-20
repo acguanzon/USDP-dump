@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Integration Tests</title>
+    <style>
+      body { font-family: system-ui, sans-serif; padding: 16px; }
+      .pass { color: #16a34a; }
+      .fail { color: #dc2626; }
+      .test { margin-bottom: 8px; }
+      iframe { width: 1px; height: 1px; border: 0; position: absolute; left: -9999px; }
+    </style>
+  </head>
+  <body>
+    <h1>Integration Tests</h1>
+    <div id="results"></div>
+    <iframe id="pageIndex" src="../index.html"></iframe>
+    <iframe id="pageUSDP" src="../index_external.html"></iframe>
+    <script>
+      function assert(name, cond) {
+        const div = document.createElement('div');
+        div.className = 'test ' + (cond ? 'pass' : 'fail');
+        div.textContent = (cond ? 'PASS' : 'FAIL') + ' • ' + name;
+        document.getElementById('results').appendChild(div);
+        return !!cond;
+      }
+
+      let loaded = 0; const onloaded = () => { loaded++; if (loaded === 2) run(); };
+      document.getElementById('pageIndex').onload = onloaded;
+      document.getElementById('pageUSDP').onload = onloaded;
+
+      function run() {
+        const idx = document.getElementById('pageIndex').contentWindow.document;
+        const usdp = document.getElementById('pageUSDP').contentWindow.document;
+
+        // Existing homepage integrity
+        assert('index.html has login link', !!idx.querySelector('a[href="login.html"]'));
+        assert('index.html gradient classes present', !!idx.querySelector('.text-gradient'));
+
+        // USDP page loads independently
+        assert('USDP login screen present', !!usdp.getElementById('loginScreen'));
+        assert('USDP admin dashboard present', !!usdp.getElementById('adminDashboard'));
+
+        // No interference: ensure USDP doesn’t change index DOM
+        assert('index still has footer', !!idx.querySelector('footer'));
+      }
+    </script>
+  </body>
+</html>

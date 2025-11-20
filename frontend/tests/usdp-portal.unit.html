@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>USDP Portal Unit Tests</title>
+    <!-- Simple browser-based test harness without modifying project configs -->
+    <style>
+      body { font-family: system-ui, sans-serif; padding: 16px; }
+      .pass { color: #16a34a; }
+      .fail { color: #dc2626; }
+      .test { margin-bottom: 8px; }
+      iframe { width: 1px; height: 1px; border: 0; position: absolute; left: -9999px; }
+    </style>
+  </head>
+  <body>
+    <h1>USDP Portal Unit Tests</h1>
+    <div id="results"></div>
+    <iframe id="sut" src="../index_external.html"></iframe>
+    <script>
+      function assert(name, cond) {
+        const div = document.createElement('div');
+        div.className = 'test ' + (cond ? 'pass' : 'fail');
+        div.textContent = (cond ? 'PASS' : 'FAIL') + ' • ' + name;
+        document.getElementById('results').appendChild(div);
+        return !!cond;
+      }
+
+      window.addEventListener('load', () => {
+        const iframe = document.getElementById('sut');
+        iframe.onload = () => {
+          const win = iframe.contentWindow;
+          const doc = win.document;
+
+          // Function existence
+          assert('selectRole exists', typeof win.selectRole === 'function');
+          assert('showAdminDashboard exists', typeof win.showAdminDashboard === 'function');
+          assert('showStudentDashboard exists', typeof win.showStudentDashboard === 'function');
+          assert('logout exists', typeof win.logout === 'function');
+          assert('showSection exists', typeof win.showSection === 'function');
+
+          // Default UI state
+          const loginScreen = doc.getElementById('loginScreen');
+          const adminDashboard = doc.getElementById('adminDashboard');
+          const studentDashboard = doc.getElementById('studentDashboard');
+          assert('loginScreen visible by default', !loginScreen.classList.contains('d-none'));
+          assert('adminDashboard hidden by default', adminDashboard.classList.contains('d-none'));
+          assert('studentDashboard hidden by default', studentDashboard.classList.contains('d-none'));
+
+          // Role selection toggles
+          win.selectRole('user');
+          const roleUserActive = doc.getElementById('userRole').classList.contains('active');
+          assert('role user is active after selectRole("user")', roleUserActive);
+
+          // Admin login demo
+          doc.getElementById('emailInput').value = 'admin@usdp.edu.ph';
+          doc.getElementById('passwordInput').value = 'password123';
+          win.showAdminDashboard();
+          assert('adminDashboard becomes visible', !adminDashboard.classList.contains('d-none'));
+          assert('loginScreen hidden after admin dashboard', loginScreen.classList.contains('d-none'));
+
+          // Logout returns to login
+          win.logout();
+          assert('loginScreen visible after logout', !loginScreen.classList.contains('d-none'));
+
+          // Student dashboard demo
+          doc.getElementById('emailInput').value = 'maria.santos@usdp.edu.ph';
+          doc.getElementById('passwordInput').value = 'password123';
+          win.showStudentDashboard();
+          assert('studentDashboard becomes visible', !studentDashboard.classList.contains('d-none'));
+
+          // Section switching
+          win.showSection('dashboard', 'student');
+          const studentSection = doc.getElementById('studentDashboard').querySelector('#studentDashboardSection, #studentEventsSection, #studentProfileSection');
+          assert('some student section rendered', !!studentSection);
+        };
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Regression Tests</title>
+    <style>
+      body { font-family: system-ui, sans-serif; padding: 16px; }
+      .pass { color: #16a34a; }
+      .fail { color: #dc2626; }
+      .test { margin-bottom: 8px; }
+      iframe { width: 1px; height: 1px; border: 0; position: absolute; left: -9999px; }
+    </style>
+  </head>
+  <body>
+    <h1>System-wide Regression Tests</h1>
+    <div id="results"></div>
+    <iframe id="pageLogin" src="../login.html"></iframe>
+    <iframe id="pageAdmin" src="../admin-dashboard.html"></iframe>
+    <iframe id="pageUser" src="../dashboard.html"></iframe>
+    <script>
+      function assert(name, cond) {
+        const div = document.createElement('div');
+        div.className = 'test ' + (cond ? 'pass' : 'fail');
+        div.textContent = (cond ? 'PASS' : 'FAIL') + ' • ' + name;
+        document.getElementById('results').appendChild(div);
+        return !!cond;
+      }
+
+      let loaded = 0; const onloaded = () => { loaded++; if (loaded === 3) run(); };
+      pageLogin.onload = onloaded;
+      pageAdmin.onload = onloaded;
+      pageUser.onload = onloaded;
+
+      function run() {
+        const login = pageLogin.contentWindow.document;
+        const admin = pageAdmin.contentWindow.document;
+        const user = pageUser.contentWindow.document;
+
+        // Login page key elements
+        assert('login has role selector', !!login.querySelector('.role-selector'));
+        assert('login has form', !!login.getElementById('loginForm'));
+
+        // Admin dashboard key elements
+        assert('admin has tabs', !!admin.getElementById('adminTabs'));
+        assert('admin has users table', !!admin.getElementById('usersTable'));
+        assert('admin has discounts table', !!admin.getElementById('discountsTable'));
+
+        // User dashboard key elements
+        assert('user has discounts list', !!user.getElementById('discountsList'));
+        assert('user has redeem form', !!user.getElementById('redeemForm'));
+      }
+    </script>
+  </body>
+</html>
